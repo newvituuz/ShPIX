@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+### Ferramentas locais ###
+.idea/
+.claude/

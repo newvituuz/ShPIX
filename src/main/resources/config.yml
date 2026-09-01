@@ -1,34 +1,50 @@
 database:
   host: 127.0.0.1
   port: 3306
-  username: user
-  password: password
-  database: database
+  database: shpix
+  username: root
+  password: ""
+  properties: "useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=UTC"
+  pool-size: 8
+  table-prefix: "shpix_"
+
+payment:
+  expiration-minutes: 30
+  poll-interval-seconds: 20
+  request-timeout-seconds: 15
+  max-requests-per-minute: 240
+  min-amount: 1.00
+  max-amount: 5000.00
+  fee-percent: 0.99
+  require-empty-inventory-for-items: true
+  payer-email-domain: "shpix.local"
+
+coupons:
+  max-percent: 90.00
 
 gateways:
   MERCADO_PAGO:
-    authentication: "token"
+    enabled: true
+    access-token: ""
 
 discord:
-  token: "TOKEN"
-  channels:
-    sell: "CHANNEL_ID"
+  enabled: false
+  webhook-url: ""
+  embed:
+    color: "#2ECC71"
+    title: "Uma nova venda foi encontrada!"
+    description: "Uma nova venda do produto {product} foi encontrada!"
+    footer: "Adquirido por {player} em {date}"
+    fields:
+      player: "Comprador"
+      price: "Custo"
+      fee: "Taxa"
 
-  embeds:
-    sell:
-      color: BLACK
-      title: "Uma nova venda foi encontrada!"
-      description: "Uma nova venda do produto {product} foi encontrada!"
-      fields:
-        player: "Comprador"
-        price: "Custo"
-        rate: "Taxa"
-      footer: "Adquirido por {player} em {date}"
 categories:
-  Example:
-    name: "Categoria Exemplo"
+  exemplo:
+    name: "&aCategoria Exemplo"
     description:
-      - ""
+      - "&7Produtos de demonstração."
     icon:
       material: DIAMOND
       id: 0

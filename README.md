@@ -1,37 +1,130 @@
-# BRPayments - Sua solução inovadora de monetizar seu servidor!
+# ShPIX
 
-## Projeto descontinuado!
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Java 17+](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://adoptium.net/)
+[![Paper | Folia](https://img.shields.io/badge/Paper%20%7C%20Folia-1.20%2B-blue.svg)](https://papermc.io/)
 
-## Introdução
+Pagamentos PIX integrados para servidores Minecraft em **Paper** e **Folia**.
 
-O **BRPayments** é uma adição versátil e fácil de usar para o seu servidor Minecraft que permite aos jogadores fazer compras dentro do jogo usando métodos de pagamentos reais. Com este plugin, os donos de servidores podem monetizar seus servidores Minecraft, oferecendo uma experiência perfeita e agradável para seus jogadores.
+O ShPIX é um fork autorizado do BRPayments/vPix, reescrito com foco em integridade
+financeira, idempotência de entrega e compatibilidade real com o modelo de execução
+regionalizado do Folia.
 
-### Recursos
+---
 
-- **Compras em Jogo**: Os jogadores podem usar sua moeda virtual para comprar itens cosméticos, habilidades especiais ou outras vantagens dentro do jogo diretamente no jogo.
+## Recursos
 
-- **Loja Personalizável**: Os donos de servidores podem criar e personalizar uma loja dentro do jogo com uma ampla variedade de itens e recursos para incentivar os jogadores a fazer compras.
+- Cobranças PIX geradas dentro do jogo (QR Code em mapa + código copia-e-cola).
+- Loja em menus paginados: categorias, produtos, checkout e histórico de pedidos.
+- Cupons de desconto com validação de faixa e persistência em `coupons.yml`.
+- Entrega de recompensas idempotente: uma transação nunca entrega duas vezes, mesmo
+  com reinício do servidor, timeout, retry ou múltiplas threads.
+- Recuperação automática de pedidos pendentes após restart e entrega ao reconectar.
+- Notificação de venda via webhook do Discord (opcional).
+- Suporte a PlaceholderAPI (opcional).
 
-- **Histórico de Transações**: Os jogadores podem ver o histórico de suas transações, garantindo transparência e confiança no sistema. (EM BREVE)
+---
 
-- **Sistema de Permissões**: Administradores podem definir quais jogadores têm acesso à loja, garantindo uma experiência equilibrada e justa para todos. (EM BREVE)
+## Requisitos
 
-- **Interação com o Discord**: Os jogadores e administradores poderão comprar recursos na loja, olhar transações tudo pelo Discord. (EM BREVE)
+| Item | Versão |
+|------|--------|
+| Servidor | Paper ou Folia 1.20+ |
+| Java | 17 ou superior |
+| Banco de dados | MySQL 5.7+ / MariaDB 10.3+ |
+
+O driver JDBC do MySQL já vem embutido no `.jar`.
+
+---
 
 ## Instalação
 
-Para instalar o Plugin de Pagamento em Jogo para Minecraft, siga estas etapas:
+1. Coloque `ShPIX-<versão>.jar` em `plugins/`.
+2. Inicie o servidor uma vez para gerar `plugins/ShPIX/`.
+3. Edite `plugins/ShPIX/config.yml` com as credenciais do banco e o access token
+   da gateway.
+4. Execute `/shpix reload` ou reinicie o servidor.
 
-1. **Baixe o Plugin**: Baixe o arquivo JAR do plugin em [releases](https://github.com/Bremado/BRPayments/releases/)
+Opcional: coloque uma imagem `plugins/ShPIX/logo.png` para exibi-la no centro do
+QR Code.
 
-2. **Faça o Upload do Plugin**: Faça o upload do arquivo JAR para o diretório `plugins` do seu servidor.
+---
 
-3. **Reinicie o Servidor**: Reinicie seu servidor Minecraft para habilitar o plugin.
+## Configuração
 
-4. **Configuração**: Configure o plugin editando o arquivo [`config.yml`](https://github.com/Bremado/BRPayments/blob/master/src/main/resources/config.yml).
+Toda a configuração fica em `plugins/ShPIX/config.yml`. Os valores abaixo são os
+mais relevantes:
 
-# Imagens
+```yaml
+payment:
+  expiration-minutes: 30      # validade da cobrança
+  poll-interval-seconds: 20   # intervalo de verificação junto à gateway
+  min-amount: 1.00            # valor mínimo aceito
+  max-amount: 5000.00         # valor máximo aceito
+  fee-percent: 0.99           # taxa repassada ao comprador
 
-![image1](https://cdn.discordapp.com/attachments/1033514657002029179/1157819613665579058/image.png?ex=6519ff0b&is=6518ad8b&hm=5335a12176227d834db9b787c204fe6e0a2805e24ac9cb9ecb9a0575d8b37076&)
-![image2](https://cdn.discordapp.com/attachments/1033514657002029179/1157819614097580102/image.png?ex=6519ff0b&is=6518ad8b&hm=4d7e35e4c60756ea585a4a52d8eb9cc50674115e383167ec1b9b951d97b36ebf&)
-![image3](https://cdn.discordapp.com/attachments/1033514657002029179/1157819614382800896/image.png?ex=6519ff0b&is=6518ad8b&hm=5c5a5c5a6b70eac7671eb0a725de15754ddc87d29e852b25ddfe89bb366dfc52&)
+gateways:
+  MERCADO_PAGO:
+    enabled: true
+    access-token: ""          # access token de produção
+```
+
+Produtos ficam em `plugins/ShPIX/products/*.yml`; mensagens em
+`plugins/ShPIX/messages.yml`.
+
+> O access token nunca é escrito em log. Trate `config.yml` como arquivo secreto.
+
+---
+
+## Comandos
+
+| Comando | Permissão | Descrição |
+|---------|-----------|-----------|
+| `/shop` | `shpix.shop` | Abre a loja virtual |
+| `/shop categorias` | `shpix.shop` | Lista as categorias |
+| `/shop categoria <id>` | `shpix.shop` | Abre os produtos de uma categoria |
+| `/shpix reload` | `shpix.admin` | Recarrega configuração, produtos e cupons |
+| `/shpix status` | `shpix.admin` | Estado do banco, gateways e pedidos abertos |
+| `/shpix cupom criar <nome> <%>` | `shpix.admin` | Cria um cupom |
+| `/shpix cupom remover <nome>` | `shpix.admin` | Remove um cupom |
+| `/shpix cupom listar` | `shpix.admin` | Lista os cupons |
+| `/shpix pedido <referência>` | `shpix.admin` | Consulta um pedido |
+| `/shpix reentregar <referência>` | `shpix.admin` | Reenvia a entrega de um pedido pago |
+
+---
+
+## Ciclo de vida de um pedido
+
+```text
+WAITING ──(gateway aprova)──> PAID ──(jogador online)──> DELIVERED
+   │
+   ├──(expirou)──> EXPIRED
+   ├──(recusado)─> CANCELLED
+   └──(estorno)──> REFUNDED
+```
+
+A transição de estado é feita por `UPDATE ... WHERE status = <estado anterior>`.
+Só a thread cujo update afeta uma linha executa a entrega, o que torna a operação
+idempotente entre threads, reinícios e retries.
+
+---
+
+## Compilação
+
+```bash
+mvn clean package
+```
+
+O artefato final é gerado em `target/ShPIX-<versão>.jar`.
+
+---
+
+## Licença
+
+Distribuído sob a licença [MIT](LICENSE). Você pode usar, copiar, modificar,
+mesclar, publicar, distribuir, sublicenciar e vender cópias do software, desde
+que o aviso de copyright e o texto da licença sejam mantidos.
+
+## Créditos
+
+Baseado no BRPayments/vPix, de Toddy, utilizado sob autorização do autor original.

@@ -1,6 +1,29 @@
-name: BRPayments
+name: ShPIX
 version: '${project.version}'
-main: me.toddydev.bukkit.BukkitMain
-author: Toddy
+main: dev.singlehope.free.shpix.ShPixPlugin
+description: Pagamentos PIX integrados para servidores Paper e Folia.
+api-version: '1.20'
+folia-supported: true
 softdepend:
   - PlaceholderAPI
+
+commands:
+  shop:
+    description: Abre a loja virtual.
+    usage: /shop [categorias|categoria <id>]
+    aliases: [loja]
+    permission: shpix.shop
+    permission-message: Você não tem permissão para usar este comando.
+  shpix:
+    description: Comandos administrativos do ShPIX.
+    usage: /shpix <reload|status|cupom|pedido|reentregar>
+    permission: shpix.admin
+    permission-message: Você não tem permissão para usar este comando.
+
+permissions:
+  shpix.shop:
+    description: Permite abrir a loja virtual.
+    default: true
+  shpix.admin:
+    description: Permite gerenciar o ShPIX.
+    default: op
