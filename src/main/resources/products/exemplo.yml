@@ -1,0 +1,42 @@
+id: "PICARETA-DIAMANTE"
+category: exemplo
+name: "Picareta de Diamante"
+price: 1.00
+gateways:
+  - MERCADO_PAGO
+icon:
+  id: 0
+  material: DIAMOND_PICKAXE
+  name: "&bPicareta de Diamante"
+  description:
+    - "&7Uma picareta de diamante novinha."
+rewards:
+  commands: []
+  items:
+    DIAMOND_PICKAXE:
+      id: 0
+      amount: 1
+actions:
+  COLLECT:
+    sound: ENTITY_PLAYER_LEVELUP
+    message: |
+      &aVocê recebeu: &f{product}&a!
+      &7Obrigado pela sua compra.
+    action-bar: "&eO seu pedido foi &bentregue&e!"
+    screen:
+      title: "&b&lPEDIDO ENTREGUE"
+      subtitle: "&eO seu pedido foi &bentregue&e com sucesso!"
+  REFUND:
+    sound: BLOCK_ANVIL_LAND
+    message: "&eO seu pedido foi reembolsado."
+    action-bar: "&eO seu pedido foi &breembolsado&e."
+    screen:
+      title: "&c&lPEDIDO REEMBOLSADO"
+      subtitle: "&cO pedido &f{reference} &cfoi reembolsado."
+  EXPIRED:
+    sound: BLOCK_ANVIL_LAND
+    message: "&cO seu pedido expirou."
+    action-bar: "&cO seu pedido expirou."
+    screen:
+      title: "&c&lPEDIDO EXPIRADO"
+      subtitle: "&cO pedido &f{reference} &cexpirou."
